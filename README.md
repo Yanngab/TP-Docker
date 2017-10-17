@@ -1,0 +1,9 @@
+# TP-Docker
+
+# Le but de l'exercice était de lier 2 conteneurs : tomcat en tant que serveur, et postgresql en tant que base de données, afin que l'application web sauvegarde les données saisies à travers le formulaire.
+
+Nous commençons donc par cloner le dossier de l'intervenant contenant l'application web. Nous nous déplaçons ensuite dans le dossier afin de créer le Dockerfile et ainsi introduire la première image : "tomcat:8-jre8". Nous copions ensuite l'application dans le dossier webapps afin qu'il puisse s'afficher en localhost à l'aide de la commande: "COPY ./dbproject.war /usr/local/tomcat/webapps". Sauvegarder puis fermer le Dockerfile, créer ensuite l'image avec la commande :"docker build -t chaussures .".
+
+Nous passons donc au deuxième conteneur : nous avons d'abord crée un dossier postgres avec un nouveau Dockerfile à l'intérieur contenant cette fois-ci l'image "postgres:9.5", nous copions ensuite la base de données "init-db.sql" dans le dossier /docker-entrypoint-initdb.d/  afin de reutiliser la structure de cette base de données sans devoir en recréer une, en rajoutant aussi un volume : "VOLUME [« /var/lib/postgresql/data »]" afin que les données de l'application soient stockées dans ce dossier. Une fois fait nous pouvons créer la deuxieme image à l'aide de la commande :"docker build -t dbimage ." pour ensuite démarrer le second conteneur que l'on nommera "db" :"docker run -d --name db dbimage". Nous pouvons maintenant démarrer le premier conteneur qu'on l'on appelera "myapp", grâce à l'image "chaussures", lié au deuxieme conteneur à travers la commande "--link", et en lui affectant un port inutilisé ce qui donne donc la commande :"docker run -d --name myapp -p 8887:8080 --link db chaussures".
+
+On se connecte ensuite au localhost sur le port renseigné et apres avoir vérifié que les données étaient bien sauvegardées, l'exercice est terminé.
